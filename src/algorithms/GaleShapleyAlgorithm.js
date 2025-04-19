@@ -4,12 +4,12 @@ class GaleShapleyAlgorithm extends BaseAlgorithm {
   calculateAllocation() {
     this.validateInput();
     
-    const allocation = {};
+    const allocation = { };
     const freeAgents = Array.from({ length: this.agents }, (_, i) => i + 1);
     const houseProposals = {};
     
     // Initialize house proposals
-    for (let i = 1; i <= this.houses; i++) {
+    for (let i = 1;i <= this.houses; i++) {
       houseProposals[i] = null;
     }
     
