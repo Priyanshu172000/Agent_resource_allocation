@@ -1,13 +1,17 @@
 import React from 'react';
 import OriginalAlgorithm from '../../algorithms/OriginalAlgorithm';
 import GaleShapleyAlgorithm from '../../algorithms/GaleShapleyAlgorithm';
+import ThirdAlgorithm from '../../algorithms/ThirdAlgorithm';
+import FourthAlgorithm from '../../algorithms/FourthAlgorithm';
 import './AlgorithmComparison.css';
 
 const AlgorithmComparison = ({ agents, houses, preferences }) => {
   const runAlgorithms = () => {
     const algorithms = [
-      { name: 'Original Algorithm', instance: new OriginalAlgorithm(agents, houses, preferences) },
-      { name: 'Gale-Shapley Algorithm', instance: new GaleShapleyAlgorithm(agents, houses, preferences) }
+      // { name: 'Original Algorithm', instance: new OriginalAlgorithm(agents, houses, preferences) },
+      { name: 'Gale-Shapley Algorithm', instance: new GaleShapleyAlgorithm(agents, houses, preferences) },
+      { name: 'Pareto_Optimal_Matching', instance: new ThirdAlgorithm(agents, houses, preferences) },
+      { name: 'Least_Dissatisfaction', instance: new FourthAlgorithm(agents, houses, preferences) }
     ];
 
     const results = algorithms.map(alg => {
@@ -51,7 +55,7 @@ const AlgorithmComparison = ({ agents, houses, preferences }) => {
                   <ul>
                     {Object.entries(result.allocation).map(([agent, house]) => (
                       <li key={agent}>
-                        Agent {agent} → House {house}
+                        Student {agent} → Room {house}
                       </li>
                     ))}
                   </ul>
