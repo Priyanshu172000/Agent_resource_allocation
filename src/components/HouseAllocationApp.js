@@ -14,6 +14,7 @@ const HouseAllocationApp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showAllocationAnimation, setShowAllocationAnimation] = useState(false);
   const [fileError, setFileError] = useState('');
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   // Reset preferences when params change
 //   useEffect(() => {
@@ -162,35 +163,16 @@ const HouseAllocationApp = () => {
         <div key={`agent-${i}`} className="agent-preferences">
           <div className="agent-label">
             <div className="agent-icon">👤</div>
-            <div>Agent {i}</div>
+            <div>Student {i}</div>
           </div>
-          <div className="preference-list">{prefInputs}</div>
+          <div className="preference-list">
+            {prefInputs}
+          </div>
         </div>
       );
     }
     
     return rows;
-  };
-
-  // Render house icons for the legend
-  const renderHouseLegend = () => {
-    const houseIcons = [];
-    
-    for (let i = 1; i <= houses; i++) {
-      houseIcons.push(
-        <div key={`house-${i}`} className="house-icon-container">
-          <div className="house-icon">🏠</div>
-          <div>House {i}</div>
-        </div>
-      );
-    }
-    
-    return (
-      <div className="house-legend">
-        <h3>Available Houses:</h3>
-        <div className="house-icons">{houseIcons}</div>
-      </div>
-    );
   };
 
   // Render allocation results
@@ -204,7 +186,7 @@ const HouseAllocationApp = () => {
     
     return (
       <div className={`allocation-results ${showAllocationAnimation ? 'show-animation' : ''}`}>
-        <h3>House Allocation Results:</h3>
+        <h3>Room Allocation Results:</h3>
         <div className="allocation-grid">
           {allocatedAgents.map(agent => (
             <div key={`result-${agent}`} className="allocation-item">
@@ -214,7 +196,7 @@ const HouseAllocationApp = () => {
                 <div className="house-result-icon">🏠</div>
               </div>
               <div className="allocation-text">
-                Agent {agent} is allocated House {allocation[agent]}
+                Student {agent} is allocated Room {allocation[agent]}
               </div>
             </div>
           ))}
@@ -235,7 +217,7 @@ const HouseAllocationApp = () => {
         const workbook = XLSX.read(data, { type: 'array' });
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-
+        
         // Validate the data structure
         if (jsonData.length < 2) {
           setFileError('Excel file must have at least 2 rows (header and data)');
@@ -246,7 +228,7 @@ const HouseAllocationApp = () => {
         const newPreferences = {};
         let validData = true;
 
-        for (let i = 1; i < jsonData.length; i++) {
+        for (let i = 1; i < Math.min(jsonData.length, agents+1); i++) {
           const row = jsonData[i];
           if (!row || row.length < prefLength + 1) {
             validData = false;
@@ -292,18 +274,18 @@ const HouseAllocationApp = () => {
   };
 
   return (
-    <div className="house-allocation-container">
+    <div className="Room-allocation-container">
       <div className="app-header">
-        <h1>House Allocation Problem</h1>
+        <h1>Room Allocation Problem with Student Preferences</h1>
         <p className="app-description">
-          Assign houses to agents based on preference rankings
+          Assign Rooms to Students based on preference rankings
         </p>
       </div>
       
       <div className="input-parameters">
         <div className="parameter-input">
           <label>
-            Number of Agents (n):
+            Number of Students (n):
           </label>
           <input
             type="number"
@@ -352,20 +334,26 @@ const HouseAllocationApp = () => {
             className="file-input"
           />
           <p className="file-format-info">
-            Excel format: First column should be Agent ID, followed by preference columns (1 to r)
+            Excel format: First column should be Student ID, followed by preference columns (1 to r)
           </p>
           {fileError && <div className="error-message">{fileError}</div>}
         </div>
       </div>
       
-      {renderHouseLegend()}
-      
       <div className="preferences-container">
-        <h2>Agent Preferences:</h2>
+        <div className="preferences-header">
+          <h2>Student Preferences:</h2>
+          <button 
+            className="toggle-preferences-btn"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            {isCollapsed ? 'Show Preferences' : 'Hide Preferences'}
+          </button>
+        </div>
         <p className="preferences-help">
-          For each agent, enter house numbers (1 to {houses}) in order of preference.
+          For each Student, enter Room numbers (1 to {houses}) in order of preference.
         </p>
-        <div className="preferences-list">
+        <div className={`preferences-list ${isCollapsed ? 'collapsed' : ''}`}>
           {renderPreferenceInputs()}
         </div>
       </div>
@@ -382,7 +370,7 @@ const HouseAllocationApp = () => {
       
       {allocation && (
         <>
-          {renderAllocation()}
+          {/* {renderAllocation()} */}
           <AlgorithmComparison
             agents={agents}
             houses={houses}
